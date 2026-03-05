@@ -1,0 +1,20 @@
+{
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+
+  "editor.formatOnSave": false,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+
+  "eslint.experimental.useFlatConfig": true,
+
+  "eslint.validate": ["typescript", "javascript"],
+
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  "eslint.format.enable": true
+}
