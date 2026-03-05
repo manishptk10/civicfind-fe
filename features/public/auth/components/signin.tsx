@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { Separator } from '@radix-ui/react-separator';
 import { setAuthCookies } from '@/app/actions/setAuthCookies';
 import AuthWrapper from './auth-wrapper';
-import { Eye, EyeClosed, Loader } from 'lucide-react';
+import { Eye, EyeClosed } from 'lucide-react';
 import { ApiStatusResponse } from '@/types/auth';
 import { SignInFormValues, signinSchema } from '@/features/public/auth/schema/signin-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,20 +39,15 @@ function SignIn() {
     mode: 'onChange',
   });
 
-  const { mutateAsync: loginMutation, isPending } = useApiMutation<ApiStatusResponse>(
-    'post',
-    API_ENDPOINTS.LOGIN,
-  );
-
-  const { mutateAsync: googleLoginMutation, isPending: googleLoading } =
-    useApiMutation<ApiStatusResponse>('post', API_ENDPOINTS.GOOGLE_LOGIN);
+  const loginMutation = useApiMutation<ApiStatusResponse>('post', API_ENDPOINTS.LOGIN);
+  const googleLoginMutation = useApiMutation<ApiStatusResponse>('post', API_ENDPOINTS.GOOGLE_LOGIN);
 
   const loginWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       const token = await user.getIdToken();
-      const res = await googleLoginMutation({ idToken: token });
+      const res = await googleLoginMutation.mutateAsync({ idToken: token });
 
       if (!res?.data?.status) {
         toast.error(res?.data?.message || 'Google login failed');
@@ -87,7 +82,7 @@ function SignIn() {
     console.log('sumit', data);
 
     try {
-      const res = await loginMutation(data);
+      const res = await loginMutation.mutateAsync(data);
       if (!res.data.status) {
         toast.error(res?.data?.message || 'Login failed');
         return;
@@ -148,9 +143,10 @@ function SignIn() {
           <Button
             type="submit"
             disabled={isSubmitting}
+            loading={isSubmitting}
             className="text-white bg-primary w-full mt-5"
           >
-            {isPending ? <Loader className="animate-spin" /> : 'Sign In'}
+            Sign In
           </Button>
         </form>
         <div className="flex items-center py-6">
@@ -160,10 +156,11 @@ function SignIn() {
         </div>
         <Button
           onClick={loginWithGoogle}
-          disabled={googleLoading}
+          disabled={isSubmitting}
+          loading={isSubmitting}
           className="text-black bg-gray-200 w-full hover:bg-gray-200"
         >
-          {googleLoading ? <Loader className="animate-spin" /> : <FcGoogle size={18} />}
+          <FcGoogle size={18} />
           Sign in with Google
         </Button>
         <p className="text-base font-light text-center mt-3">

@@ -1,19 +1,18 @@
 'use client';
 import AuthWrapper from './auth-wrapper';
 import { Input } from '@/components/ui/input';
-import { Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { APP_ROUTES } from '@/constant/routes';
 import { getSessionEmail } from '@/lib/session';
-import { ApiResponse, useApiMutation } from '@/hooks/use-api';
+import { useApiMutation } from '@/hooks/use-api';
 import { ApiStatusResponse } from '@/types/auth';
 import { API_ENDPOINTS } from '@/constant/api-endpoints';
 import { toast } from 'sonner';
-import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { resendOtpSchema, ResendOtpValues } from '../schema/register-schema';
+import { handleApiError } from '@/hooks/use-api-error';
 
 const ResendOtp = () => {
   const router = useRouter();
@@ -22,7 +21,7 @@ const ResendOtp = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ResendOtpValues>({
     resolver: zodResolver(resendOtpSchema),
     defaultValues: {
@@ -30,21 +29,18 @@ const ResendOtp = () => {
     },
   });
 
-  const { mutateAsync, isPending } = useApiMutation<ApiStatusResponse>(
-    'post',
-    API_ENDPOINTS.RESEND_OTP,
-  );
+  const resendOtpMutation = useApiMutation<ApiStatusResponse>('post', API_ENDPOINTS.RESEND_OTP);
 
   const onSubmit = async (data: ResendOtpValues) => {
     try {
-      const res = await mutateAsync(data);
+      const res = await resendOtpMutation.mutateAsync(data);
       if (res?.data?.status == true) {
         toast.success(res?.data.message);
         router.push(APP_ROUTES.PUBLIC_ROUTES.VERIFY_OTP.path);
       }
     } catch (err) {
-      const error = err as AxiosError<ApiResponse>;
-      toast.error(error.response?.data?.message || error.message);
+      const { message } = handleApiError(err);
+      toast.error(message);
     }
   };
   return (
@@ -58,8 +54,13 @@ const ResendOtp = () => {
               <p className="text-sm text-destructive mt-2">{errors.email.message}</p>
             )}
           </div>
-          <Button type="submit" className="text-white bg-primary w-full mt-10" disabled={isPending}>
-            {isPending ? <Loader className="animate-spin duration-700" /> : 'Resend Otp'}
+          <Button
+            type="submit"
+            className="text-white bg-primary w-full mt-10"
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          >
+            Resend Otp
           </Button>
         </form>
       </div>

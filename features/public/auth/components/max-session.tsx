@@ -12,14 +12,14 @@ import {
 } from '@/components/ui/dialog';
 import { API_ENDPOINTS } from '@/constant/api-endpoints';
 import { APP_ROUTES } from '@/constant/routes';
-import { ApiResponse, useApiMutation } from '@/hooks/use-api';
+import { useApiMutation } from '@/hooks/use-api';
 import { clearSessionEmail, getSessionEmail } from '@/lib/session';
 import { ApiStatusResponse } from '@/types/auth';
-import { AxiosError } from 'axios';
 import { AlertTriangle, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import React from 'react';
+import { handleApiError } from '@/hooks/use-api-error';
 
 type MaxSessionProps = {
   open: boolean;
@@ -49,8 +49,8 @@ function MaxSession({ open, setOpen }: MaxSessionProps) {
 
       router.replace(APP_ROUTES.PROTECTED_ROUTES.DASHBOARD.path);
     } catch (err) {
-      const error = err as AxiosError<ApiResponse>;
-      toast.error(error.response?.data?.message || error.message);
+      const { message } = handleApiError(err);
+      toast.error(message);
     }
   };
 

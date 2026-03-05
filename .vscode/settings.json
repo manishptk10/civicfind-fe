@@ -2,17 +2,18 @@
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
 
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always"
   },
 
-  "editor.formatOnSave": false,
-  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
 
   "eslint.experimental.useFlatConfig": true,
 
-  "eslint.validate": ["typescript", "javascript"],
+  "eslint.validate": ["typescript", "javascript", "javascriptreact", "typescriptreact"],
 
   "eslint.workingDirectories": [{ "mode": "auto" }],
 

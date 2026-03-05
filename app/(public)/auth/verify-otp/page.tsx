@@ -1,4 +1,4 @@
-import VerifyOtp from '@/features/public/auth/components/verify-otp';
+import VerifyOtp from '@/features/public/auth/components/verify/verify-otp';
 
 const VerifyOtpPage = () => {
   return <VerifyOtp />;
